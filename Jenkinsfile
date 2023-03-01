@@ -1,29 +1,33 @@
-pipeline{
+pipeline {
     agent any
-    environment {
-        PATH = "$PATH:/opt/apache-maven-3.8.2/bin"
+
+    tools {
+        maven "MAVEN"
+        jdk "JDK"
     }
-    stages{
-       stage('GetCode'){
+
+    stages {
+        stage('Initialize'){
             steps{
-                git 'https://github.com/ravdy/javaloginapp.git'
+                echo "PATH = ${M2_HOME}/bin:${PATH}"
+                echo "M2_HOME = /opt/maven"
             }
-         }        
-       stage('Build'){
-            steps{
-                sh 'mvn clean package'
+        }
+        stage('Build') {
+            steps {
+                dir("/var/lib/jenkins/workspace/New_demo/my-app/") {
+                sh 'mvn -B -DskipTests clean package'
+                }
+            
             }
-         }
-        stage('SonarQube analysis') {
-//    def scannerHome = tool 'SonarScanner 4.0';
-        steps{
-        withSonarQubeEnv('sonarqube-8.9') { 
-        // If you have configured more than one global server connection, you can specify its name
-//      sh "${scannerHome}/bin/sonar-scanner"
-        sh "mvn sonar:sonar"
-    }
         }
-        }
-       
-    }
+     }
+    post {
+       always {
+          junit(
+        allowEmptyResults: true,
+        testResults: '*/test-reports/.xml'
+      )
+      }
+   } 
 }
