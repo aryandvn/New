@@ -3,10 +3,10 @@
 FROM openjdk:lts
 
 #Copying it to a directory
-COPY . /src/java
-WORKDIR /src/java
+COPY . /var/lib/jenkins/workspace/test /src/java
+WORKDIR /var/lib/jenkins/workspace/test/target
 
 #To run the program
-RUN ["javac","App.java"]
+RUN ["javac","my-app-1.0-SNAPSHOT.jar"]
 
-ENTRYPOINT [ "javac","App.java" ]
+ENTRYPOINT [ "javac","my-app-1.0-SNAPSHOT.jar" ]
